@@ -1,6 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import os
+import hmac
 import psycopg
+import resend
 
 app = Flask(__name__)
 
@@ -74,9 +76,58 @@ def db_test():
         }, 500
 
 
+@app.route("/email-test")
+def email_test():
+    supplied_token = request.args.get("token", "")
+    expected_token = os.environ.get("EMAIL_TEST_TOKEN", "")
+    api_key = os.environ.get("RESEND_API_KEY", "")
+    recipient = os.environ.get("EMAIL_TEST_TO", "")
+
+    if not expected_token or not hmac.compare_digest(
+        supplied_token, expected_token
+    ):
+        return {"status": "error", "message": "Unauthorized"}, 401
+
+    if not api_key or not recipient:
+        return {
+            "status": "error",
+            "message": "Email environment variables are missing."
+        }, 503
+
+    try:
+        resend.api_key = api_key
+
+        result = resend.Emails.send({
+            "from": "Learners Page <onboarding@resend.dev>",
+            "to": [recipient],
+            "subject": "Learners Page email test",
+            "text": (
+                "Hello! Your Learners Page website has "
+                "successfully connected to Resend."
+            )
+        })
+
+        return {
+            "status": "success",
+            "message": "Resend accepted the test email.",
+            "email_id": result.get("id")
+        }
+
+    except Exception:
+        app.logger.exception("Resend email test failed")
+        return {
+            "status": "error",
+            "message": (
+                "Email sending failed. Check Resend dashboard "
+                "and Render logs."
+            )
+        }, 502
+
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000)),
         debug=False
     )
+\
