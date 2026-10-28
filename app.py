@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request
 import os
 import hmac
+import logging
 import psycopg
 import resend
 
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)
+
 
 def get_books():
     database_url = os.environ.get("DATABASE_URL")
@@ -85,7 +88,10 @@ def email_test():
     if not expected_token or not hmac.compare_digest(
         supplied_token, expected_token
     ):
-        return {"status": "error", "message": "Unauthorized"}, 401
+        return {
+            "status": "error",
+            "message": "Unauthorized"
+        }, 401
 
     if not api_key or not recipient:
         return {
@@ -106,10 +112,16 @@ def email_test():
             )
         })
 
+        email_id = (
+            result.get("id")
+            if isinstance(result, dict)
+            else getattr(result, "id", None)
+        )
+
         return {
             "status": "success",
             "message": "Resend accepted the test email.",
-            "email_id": result.get("id")
+            "email_id": email_id
         }
 
     except Exception:
@@ -129,4 +141,3 @@ if __name__ == "__main__":
         port=int(os.environ.get("PORT", 5000)),
         debug=False
     )
-\
