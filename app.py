@@ -6,7 +6,6 @@ import resend
 
 app = Flask(__name__)
 
-
 def get_books():
     database_url = os.environ.get("DATABASE_URL")
 
