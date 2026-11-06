@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, jsonify, render_template_string
 import os
 import hmac
