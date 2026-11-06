@@ -7,7 +7,88 @@
     <meta name="description" content="Explore practical ebooks on AI, money management, career and digital skills at Learners Page.">
     <title>Learners Page | Digital Books for Curious Minds</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .buy-btn { cursor: pointer; }
+        .buy-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+        .purchase-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(10, 25, 18, .7);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .purchase-modal.show { display: flex; }
+
+        .purchase-box {
+            width: 100%;
+            max-width: 440px;
+            background: #fff;
+            border-radius: 18px;
+            padding: 28px;
+            position: relative;
+            box-shadow: 0 20px 60px #0003;
+        }
+
+        .purchase-box h2 {
+            margin: 0 0 8px;
+            color: #176b4d;
+        }
+
+        .purchase-box > p {
+            color: #637168;
+            margin-bottom: 20px;
+        }
+
+        .purchase-box input {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            margin: 12px 0;
+            border: 1px solid #d8e1da;
+            border-radius: 9px;
+            font: inherit;
+        }
+
+        .purchase-box button { width: 100%; margin-top: 12px; }
+
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            border: 0;
+            background: transparent;
+            font-size: 27px;
+            cursor: pointer;
+            color: #526258;
+        }
+
+        .purchase-message {
+            font-size: 14px;
+            color: #b42318;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .selected-book {
+            background: #f0f6f1;
+            padding: 12px;
+            border-radius: 9px;
+            margin: 15px 0;
+            color: #176b4d;
+            font-weight: 700;
+        }
+
+        body.modal-open { overflow: hidden; }
+    </style>
 </head>
+
 <body>
 
 <header class="navbar">
@@ -24,7 +105,6 @@
     <section class="hero">
         <div class="hero-content">
             <p class="eyebrow">THE DIGITAL BOOKSTORE</p>
-
             <h1>Knowledge that<br><span>moves you forward.</span></h1>
 
             <p class="hero-text">
@@ -39,18 +119,9 @@
             </div>
 
             <div class="stats">
-                <div>
-                    <strong>8+</strong>
-                    <small>Digital eBooks</small>
-                </div>
-                <div>
-                    <strong>Practical</strong>
-                    <small>Useful knowledge</small>
-                </div>
-                <div>
-                    <strong>Learn</strong>
-                    <small>At your own pace</small>
-                </div>
+                <div><strong>8+</strong><small>Digital eBooks</small></div>
+                <div><strong>Practical</strong><small>Useful knowledge</small></div>
+                <div><strong>Learn</strong><small>At your own pace</small></div>
             </div>
         </div>
 
@@ -77,7 +148,6 @@
         </div>
     </section>
 
-
     <section class="courses section" id="books">
 
         <div class="section-heading">
@@ -87,7 +157,6 @@
         </div>
 
         {% if db_error %}
-
             <div class="store-note">
                 Our book collection is temporarily unavailable.
                 Please try again later.
@@ -98,23 +167,16 @@
             <div class="course-grid">
 
                 {% for book in books %}
-
                 <article class="course-card">
 
                     <div class="ebook-cover cover-purple">
                         <span>LEARNERS PAGE / {{ "%02d"|format(loop.index) }}</span>
-
-                        <strong>
-                            {{ book.title }}
-                        </strong>
-
+                        <strong>{{ book.title }}</strong>
                         <small>Read. Learn. Grow.</small>
                     </div>
 
                     <p class="course-tag">DIGITAL EBOOK</p>
-
                     <h3>{{ book.title }}</h3>
-
                     <p>{{ book.description }}</p>
 
                     <div class="book-price">
@@ -122,34 +184,34 @@
                         <span>Digital eBook</span>
                     </div>
 
-                    <button class="btn primary buy-btn" type="button" disabled>
-                        Payment setup in progress
+                    <button
+                        class="btn primary buy-btn"
+                        type="button"
+                        data-book-id="{{ book.id }}"
+                        data-book-title="{{ book.title }}"
+                        data-book-price="{{ '%.2f'|format(book.price) }}"
+                    >
+                        Buy Now →
                     </button>
 
                 </article>
-
                 {% endfor %}
 
             </div>
 
         {% else %}
-
             <div class="store-note">
                 No eBooks are currently available.
             </div>
-
         {% endif %}
 
     </section>
 
-
     <section class="about section" id="about">
-
         <div class="about-mark">N<span>.</span></div>
 
         <div>
             <p class="eyebrow">ABOUT LEARNERS PAGE</p>
-
             <h2>Good ideas.<br>Made accessible.</h2>
 
             <p>
@@ -162,16 +224,11 @@
                 Explore the collection ↗
             </a>
         </div>
-
     </section>
 
-
     <section class="cta section" id="contact">
-
         <p class="eyebrow">HAVE A QUESTION?</p>
-
         <h2>Your next great read<br>starts here.</h2>
-
         <p>For product questions or support, contact our store team.</p>
 
         <a href="mailto:hello@example.com" class="btn primary">
@@ -181,21 +238,173 @@
         <p class="contact-note">
             Store contact email needs to be configured before launch.
         </p>
-
     </section>
 
 </main>
 
+<!-- Purchase form -->
+<div class="purchase-modal" id="purchaseModal">
+    <div class="purchase-box">
+
+        <button class="close-modal" id="closeModal" type="button"
+                aria-label="Close">&times;</button>
+
+        <h2>Complete Your Purchase</h2>
+        <p>Enter your details to continue to secure payment.</p>
+
+        <div class="selected-book" id="selectedBook">
+            Select an eBook
+        </div>
+
+        <form id="purchaseForm">
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Your full name"
+                maxlength="100"
+                autocomplete="name"
+                required
+            >
+
+            <input
+                type="email"
+                id="customerEmail"
+                placeholder="Your email address"
+                autocomplete="email"
+                required
+            >
+
+            <input
+                type="tel"
+                id="customerPhone"
+                placeholder="10-digit mobile number"
+                maxlength="10"
+                pattern="[6-9][0-9]{9}"
+                inputmode="numeric"
+                autocomplete="tel"
+                required
+            >
+
+            <button class="btn primary" type="submit" id="payButton">
+                Continue to Payment
+            </button>
+
+            <div class="purchase-message" id="purchaseMessage"
+                 role="alert"></div>
+        </form>
+
+    </div>
+</div>
 
 <footer>
-
-    <a href="/" class="logo">
-        <span>N</span> Learners Page
-    </a>
-
+    <a href="/" class="logo"><span>N</span> Learners Page</a>
     <p>Digital books for curious minds. © 2026 Learners Page</p>
-
 </footer>
+
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+<script>
+    const modal = document.getElementById("purchaseModal");
+    const form = document.getElementById("purchaseForm");
+    const selectedBook = document.getElementById("selectedBook");
+    const message = document.getElementById("purchaseMessage");
+    const payButton = document.getElementById("payButton");
+
+    let currentBookId = null;
+
+    document.querySelectorAll(".buy-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            currentBookId = button.dataset.bookId;
+
+            selectedBook.textContent =
+                button.dataset.bookTitle + " — ₹" +
+                Number(button.dataset.bookPrice).toFixed(0);
+
+            message.textContent = "";
+            form.reset();
+
+            modal.classList.add("show");
+            document.body.classList.add("modal-open");
+        });
+    });
+
+    function closePurchaseModal() {
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+    }
+
+    document.getElementById("closeModal").addEventListener(
+        "click", closePurchaseModal
+    );
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            closePurchaseModal();
+        }
+    });
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (!currentBookId) {
+            message.textContent = "Please select an eBook first.";
+            return;
+        }
+
+        if (typeof Cashfree === "undefined") {
+            message.textContent =
+                "Payment service could not load. Please refresh and try again.";
+            return;
+        }
+
+        payButton.disabled = true;
+        payButton.textContent = "Creating secure payment...";
+        message.textContent = "";
+
+        const customer = {
+            book_id: currentBookId,
+            name: document.getElementById("customerName").value.trim(),
+            email: document.getElementById("customerEmail").value.trim(),
+            phone: document.getElementById("customerPhone").value.trim()
+        };
+
+        try {
+            const response = await fetch("/create-order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(customer)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.payment_session_id) {
+                throw new Error(
+                    result.error || "Unable to create payment."
+                );
+            }
+
+            const cashfree = Cashfree({
+                mode: result.environment === "production"
+                    ? "production"
+                    : "sandbox"
+            });
+
+            await cashfree.checkout({
+                paymentSessionId: result.payment_session_id,
+                redirectTarget: "_self"
+            });
+
+        } catch (error) {
+            message.textContent =
+                error.message || "Something went wrong. Please try again.";
+
+            payButton.disabled = false;
+            payButton.textContent = "Continue to Payment";
+        }
+    });
+</script>
 
 </body>
 </html>
