@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Discover practical ebooks on AI, ChatGPT and digital skills at NoirPages.">
+    <meta name="description" content="Explore practical ebooks on AI, money management, career and digital skills at Learners Page.">
     <title>Learners Page | Digital Books for Curious Minds</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -19,125 +20,181 @@
 </header>
 
 <main>
+
     <section class="hero">
         <div class="hero-content">
             <p class="eyebrow">THE DIGITAL BOOKSTORE</p>
+
             <h1>Knowledge that<br><span>moves you forward.</span></h1>
+
             <p class="hero-text">
-                Discover practical digital books on AI, ChatGPT and modern
-                skills. Learn something useful, one page at a time.
+                Discover practical digital books on AI, money management,
+                career development and modern skills.
+                Learn something useful, one page at a time.
             </p>
+
             <div class="hero-actions">
                 <a href="#books" class="btn primary">Explore eBooks ↗</a>
                 <a href="#about" class="btn secondary">Our Story</a>
             </div>
+
             <div class="stats">
-                <div><strong>Digital</strong><small>Instant access after launch</small></div>
-                <div><strong>Practical</strong><small>Ideas you can apply</small></div>
-                <div><strong>Learn</strong><small>At your own pace</small></div>
+                <div>
+                    <strong>8+</strong>
+                    <small>Digital eBooks</small>
+                </div>
+                <div>
+                    <strong>Practical</strong>
+                    <small>Useful knowledge</small>
+                </div>
+                <div>
+                    <strong>Learn</strong>
+                    <small>At your own pace</small>
+                </div>
             </div>
         </div>
 
         <div class="hero-art">
             <div class="orbit orbit-one"></div>
             <div class="orbit orbit-two"></div>
+
             <div class="book-stack">
                 <div class="book book-back">
                     <small>THE FUTURE IS</small>
                     <strong>DIGITAL</strong>
                 </div>
+
                 <div class="book book-front">
                     <span class="book-symbol">✳</span>
                     <small>THE LEARNERS PAGE EDITION</small>
-                    <h2>The AI<br>Toolkit</h2>
+                    <h2>Knowledge<br>Toolkit</h2>
                     <p>Ideas. Tools. Possibilities.</p>
                     <span class="book-line"></span>
                 </div>
             </div>
+
             <div class="floating-badge">✦ Read. Learn. Grow.</div>
         </div>
     </section>
 
+
     <section class="courses section" id="books">
+
         <div class="section-heading">
             <p class="eyebrow">THE COLLECTION</p>
             <h2>Ideas worth <span>opening.</span></h2>
-            <p>Explore our featured digital books and find your next useful read.</p>
+            <p>Explore our digital books and find your next useful read.</p>
         </div>
 
-        <div class="course-grid">
-            <article class="course-card">
-                <div class="ebook-cover cover-purple">
-                    <span>LEARNERS PAGE/ 01</span>
-                    <strong>THE<br>AI<br>TOOLKIT</strong>
-                    <small>Work smarter with AI</small>
-                </div>
-                <p class="course-tag">AI & PRODUCTIVITY</p>
-                <h3>The AI Toolkit</h3>
-                <p>A practical introduction to AI tools and ways to use them in your everyday work.</p>
-                <div class="book-price">₹199 <span>Digital eBook</span></div>
-                <a class="btn primary buy-btn" href="#contact">Purchase details ↗</a>
-            </article>
+        {% if db_error %}
 
-            <article class="course-card">
-                <div class="ebook-cover cover-green">
-                    <span>LEARNERS PAGE / 02</span>
-                    <strong>MASTER<br>CHATGPT</strong>
-                    <small>Prompts that work</small>
-                </div>
-                <p class="course-tag">CHATGPT & PROMPTS</p>
-                <h3>Mastering ChatGPT</h3>
-                <p>Learn how to write clearer prompts and use ChatGPT for learning and productivity.</p>
-                <div class="book-price">₹149 <span>Digital eBook</span></div>
-                <a class="btn primary buy-btn" href="#contact">Coming soon</a>
-            </article>
+            <div class="store-note">
+                Our book collection is temporarily unavailable.
+                Please try again later.
+            </div>
 
-            <article class="course-card">
-                <div class="ebook-cover cover-orange">
-                    <span>LEARNERS PAGE / 03</span>
-                    <strong>DIGITAL<br>SKILLS</strong>
-                    <small>Your next chapter</small>
-                </div>
-                <p class="course-tag">CAREER & SKILLS</p>
-                <h3>Digital Skills Starter</h3>
-                <p>A beginner-friendly guide to building useful digital skills and developing new ideas.</p>
-                <div class="book-price">₹179 <span>Digital eBook</span></div>
-                <a class="btn primary buy-btn" href="#contact">Coming soon</a>
-            </article>
-        </div>
+        {% elif books %}
 
-        <p class="store-note">
-            Product listings and prices are sample details for now.
-            Purchase and secure downloads will be enabled after payment setup.
-        </p>
+            <div class="course-grid">
+
+                {% for book in books %}
+
+                <article class="course-card">
+
+                    <div class="ebook-cover cover-purple">
+                        <span>LEARNERS PAGE / {{ "%02d"|format(loop.index) }}</span>
+
+                        <strong>
+                            {{ book.title }}
+                        </strong>
+
+                        <small>Read. Learn. Grow.</small>
+                    </div>
+
+                    <p class="course-tag">DIGITAL EBOOK</p>
+
+                    <h3>{{ book.title }}</h3>
+
+                    <p>{{ book.description }}</p>
+
+                    <div class="book-price">
+                        ₹{{ "%.0f"|format(book.price) }}
+                        <span>Digital eBook</span>
+                    </div>
+
+                    <button class="btn primary buy-btn" type="button" disabled>
+                        Payment setup in progress
+                    </button>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="store-note">
+                No eBooks are currently available.
+            </div>
+
+        {% endif %}
+
     </section>
 
+
     <section class="about section" id="about">
+
         <div class="about-mark">N<span>.</span></div>
+
         <div>
             <p class="eyebrow">ABOUT LEARNERS PAGE</p>
+
             <h2>Good ideas.<br>Made accessible.</h2>
+
             <p>
                 Learners Page is a digital bookstore built for curious minds.
                 Our goal is to make useful knowledge easy to explore through
-                practical, accessible digital books.
+                practical and accessible digital books.
             </p>
-            <a href="#books" class="text-link">Explore the collection ↗</a>
+
+            <a href="#books" class="text-link">
+                Explore the collection ↗
+            </a>
         </div>
+
     </section>
+
 
     <section class="cta section" id="contact">
+
         <p class="eyebrow">HAVE A QUESTION?</p>
+
         <h2>Your next great read<br>starts here.</h2>
+
         <p>For product questions or support, contact our store team.</p>
-        <a href="mailto:hello@example.com" class="btn primary">Contact the Store ↗</a>
-        <p class="contact-note">Store contact email needs to be configured before launch.</p>
+
+        <a href="mailto:hello@example.com" class="btn primary">
+            Contact the Store ↗
+        </a>
+
+        <p class="contact-note">
+            Store contact email needs to be configured before launch.
+        </p>
+
     </section>
+
 </main>
 
+
 <footer>
-    <a href="/" class="logo"><span>N</span> Learners Page</a>
+
+    <a href="/" class="logo">
+        <span>N</span> Learners Page
+    </a>
+
     <p>Digital books for curious minds. © 2026 Learners Page</p>
+
 </footer>
 
 </body>
