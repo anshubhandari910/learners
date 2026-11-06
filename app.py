@@ -17,7 +17,6 @@ app.logger.setLevel(logging.INFO)
 
 CASHFREE_API_VERSION = "2023-08-01"
 
-
 def get_database_url():
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
