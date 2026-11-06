@@ -636,3 +636,137 @@ footer p {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* =====================================
+   LEARNERS PAGE - EBOOK STORE UPDATES
+===================================== */
+
+/* Dynamic ebook grid */
+.course-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+/* Ebook cards */
+.course-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(20, 60, 40, 0.035);
+}
+
+.course-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 18px 40px rgba(23, 65, 43, 0.12);
+}
+
+/* Dynamic book cover titles */
+.ebook-cover strong {
+    font-size: clamp(22px, 2.3vw, 32px);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* Different cover styles */
+.course-card:nth-child(4n + 1) .ebook-cover {
+    background: linear-gradient(145deg, #4c3275, #221a3b);
+    border-left: 7px solid #18142b;
+}
+
+.course-card:nth-child(4n + 2) .ebook-cover {
+    background: linear-gradient(145deg, #39866c, #123d30);
+    border-left: 7px solid #0c3024;
+}
+
+.course-card:nth-child(4n + 3) .ebook-cover {
+    background: linear-gradient(145deg, #ca8247, #693b28);
+    border-left: 7px solid #48271c;
+}
+
+.course-card:nth-child(4n) .ebook-cover {
+    background: linear-gradient(145deg, #315b8c, #172b49);
+    border-left: 7px solid #102039;
+}
+
+/* Book price */
+.book-price {
+    color: var(--green-dark);
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+/* Purchase button */
+.buy-btn {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 5px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+/* Disabled payment button */
+.buy-btn:disabled {
+    background: #dce4dc;
+    color: #526258;
+    cursor: not-allowed;
+    opacity: 1;
+    transform: none;
+}
+
+.buy-btn:disabled:hover {
+    background: #dce4dc;
+    transform: none;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+    .course-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .course-card:last-child {
+        grid-column: auto;
+    }
+
+    .ebook-cover {
+        min-height: 240px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+    .course-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .course-card:last-child {
+        grid-column: auto;
+    }
+
+    .course-card {
+        padding: 17px;
+    }
+
+    .ebook-cover {
+        min-height: 270px;
+    }
+
+    .ebook-cover strong {
+        font-size: 30px;
+    }
+
+    .course-card h3 {
+        font-size: 18px;
+    }
+
+    .course-card > p:not(.course-tag) {
+        min-height: auto;
+    }
+
+    .buy-btn {
+        min-height: 48px;
+    }
+}
