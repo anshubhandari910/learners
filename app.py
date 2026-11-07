@@ -729,7 +729,7 @@ def download_page(token):
         return "Unable to load your download page. Please try again later.", 500
 
 
-@app.route("/download/<token>/file", methods=["POST"])
+@app.route("/download/<token>/file", methods=["GET", "POST"])
 def start_download(token):
     if not token or len(token) > 200:
         return "Invalid download link.", 400
